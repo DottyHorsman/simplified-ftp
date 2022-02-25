@@ -1,6 +1,4 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -143,8 +141,30 @@ public class MultiplexServer {
 
                         case "G": //Send file to client
 
+                            sendReplyCode(serveChannel, "S");
+
+                            //make sure we read the entire server reply
+                            buffer = ByteBuffer.allocate(MAX_FILE_NAME_LENGTH);
+                            while((serveChannel.read(buffer)) >= 0); //runs until the read returns a -1 (on client side)
+
+                            buffer.flip();
+                            //buffer.remaining() tells the # of bytes in the buffer
+                            a = new byte[buffer.remaining()];
+                            buffer.get(a);
+                            fileName = new String(a);
+                            File g = new File(fileName);
+                            BufferedReader bufferedReader = new BufferedReader(new FileReader(g));
 
 
+                            String line;
+                            while ( (line = bufferedReader.readLine()) != null )
+                            {
+                                data = ByteBuffer.wrap( (line+"\n").getBytes() );
+                                serveChannel.write(data);
+                            }
+
+
+                            serveChannel.close();
                             break;
 
 

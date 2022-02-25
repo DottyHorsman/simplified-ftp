@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -142,6 +144,37 @@ public class Client {
                     channel.shutdownOutput();
 
                     //download
+                    //create empty file to write to
+                    //need to move this into downloaded folder
+                    File acceptedFile = new File(fileName);
+                    FileWriter fileWriter = new FileWriter(acceptedFile);
+
+
+                    if (serverCode(channel).equals("F"))
+                    {
+                        System.out.println("Server rejected the request.");
+                    }
+                    else
+                    {
+
+
+                        ByteBuffer data = ByteBuffer.allocate(1024);
+                        while( (bytesRead = channel.read(data)) != -1) {
+                            //before reading from buffer, flip buffer
+                            //("limit" set to current position, "position" set to zero)
+                            data.flip();
+                            byte[] a = new byte[bytesRead];
+                            //copy bytes from buffer to array
+                            //(all bytes between "position" and "limit" are copied)
+                            data.get(a);
+                            String line = new String(a);
+
+                            //write to lines to empty file everytime its read
+                            fileWriter.write(line);
+                        }
+                        fileWriter.close();
+                        System.out.println("Server accepted the request.");
+                    }
 
 
 
@@ -177,7 +210,7 @@ public class Client {
                     //shut down sending to server
                     channel.shutdownOutput();
 
-                    //delete said file in server
+                    //rename said file in server
 
                     //Receive server response
                     //Notify the user whether the operation is successful
