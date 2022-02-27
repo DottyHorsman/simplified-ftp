@@ -141,7 +141,7 @@ public class MultiplexServer {
 
                         case "G": //Send file to client
 
-                            sendReplyCode(serveChannel, "S");
+
 
                             //make sure we read the entire server reply
                             buffer = ByteBuffer.allocate(MAX_FILE_NAME_LENGTH);
@@ -153,16 +153,22 @@ public class MultiplexServer {
                             buffer.get(a);
                             fileName = new String(a);
                             File g = new File(fileName);
-                            BufferedReader bufferedReader = new BufferedReader(new FileReader(g));
 
-
-                            String line;
-                            while ( (line = bufferedReader.readLine()) != null )
+                            if(g.exists() && !(g.isDirectory()) )
                             {
-                                data = ByteBuffer.wrap( (line+"\n").getBytes() );
-                                serveChannel.write(data);
+                                sendReplyCode(serveChannel, "S");
+                                BufferedReader bufferedReader = new BufferedReader(new FileReader(g));
+                                String line;
+                                while ( (line = bufferedReader.readLine()) != null )
+                                {
+                                    data = ByteBuffer.wrap( (line+"\n").getBytes() );
+                                    serveChannel.write(data);
+                                }
                             }
-
+                            else
+                            {
+                                sendReplyCode(serveChannel, "F");
+                            }
 
                             serveChannel.close();
                             break;

@@ -5,6 +5,8 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 //import java.util.Random;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Client {
@@ -146,7 +148,8 @@ public class Client {
                     //download
                     //create empty file to write to
                     //need to move this into downloaded folder
-                    File acceptedFile = new File(fileName);
+                    Path downloadDirectoryPath = Paths.get("downloaded files");
+                    File acceptedFile = new File(String.valueOf(downloadDirectoryPath), fileName);
                     FileWriter fileWriter = new FileWriter(acceptedFile);
 
 
